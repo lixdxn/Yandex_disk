@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yandex Disk</title>
+</head>
+<body>
+    <form method="get">
+        <label for="public_key">Enter a public key:</label>
+        <input type="text" id="public_key" name="public_key" value="{{ public_key }}">
+
+        <label for="file_type">File type:</label>
+        <select name="file_type" id="file_type">
+            <option value="" {% if selected_type == "" %}selected{% endif %}>All</option>
+            <option value="image" {% if selected_type == "image" %}selected{% endif %}>Image</option>
+            <option value="document" {% if selected_type == "document" %}selected{% endif %}>Document</option>
+        </select>
+
+        <button type="submit">Show files</button>
+    </form>
+
+    {% if files %}
+        <form method="post" action="{% url 'download' %}">
+            {% csrf_token %}
+            <input type="hidden" name="public_key" value="{{ public_key }}">
+
+            <ul>
+            {% for file in files %}
+                <li>
+                    <input type="checkbox" name="file_paths" value="{{ file.path }}">
+                    {{ file.name }} - {{ file.type }}
+                </li>
+            {% endfor %}
+            </ul>
+
+            <button type="submit">Download selected files</button>
+        </form>
+    {% else %}
+        <p>No files available or incorrect link!</p>
+    {% endif %}
+</body>
+</html>
